@@ -1,36 +1,437 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Fakeeh Care Group')</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        body {
+            font-family: 'Mulish', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 20px 0;
+        }
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .logo-icon i {
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-weight: 600;
+            font-size: 16px;
+            color: #1e293b;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #64748b;
+            transition: all 0.2s;
+            border-radius: 0;
+        }
+
+        .nav-link:hover {
+            background-color: #f1f5f9;
+            color: #3b82f6;
+        }
+
+        .nav-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .department-selector {
+            position: relative;
+        }
+
+        .department-select {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #64748b;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            margin-right: 8px;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 16px 8px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #64748b;
+            min-width: 120px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            text-align: left;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .table td {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
+
+        .btn-edit {
+            color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .btn-edit:hover {
+            background: #fef3c7;
+        }
+
+        .btn-view {
+            color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .btn-view:hover {
+            background: #dbeafe;
+        }
+
+        .btn-admit {
+            background: #3b82f6;
+            color: white;
+            font-size: 12px;
+        }
+
+        .btn-admit:hover {
+            background: #2563eb;
+        }
+
+        /* Pagination */
+        .pagination {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination nav {
+            display: flex;
+            gap: 4px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            color: #64748b;
+        }
+
+        .pagination .active span {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .pagination a:hover {
+            background: #f1f5f9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar .logo-text,
+            .sidebar .nav-link span {
+                display: none;
+            }
+
+            .search-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <span class="logo-text">Dentina</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>Patients</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-bed"></i>
+                        <span>Rendez-Vous</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+               
+            </header>
+
+            <!-- Content -->
+            <main class="content">
+                @yield('content')
             </main>
         </div>
-    </body>
+    </div>
+
+    @stack('scripts')
+</body>
 </html>

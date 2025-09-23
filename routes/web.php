@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\RendezVousController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -18,6 +19,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::prefix('patients')->group(function(){
+    Route::get('/search', [PatientController::class, 'search'])->name('patients.search'); // Déplacé avant les routes avec paramètres
     Route::get('/',[PatientController::class, 'index'])->name('patients.index');
     Route::get('/create',[PatientController::class, 'create'])->name('patients.create');
     Route::post('/',[PatientController::class, 'store'])->name('patients.store');
@@ -26,5 +28,14 @@ Route::prefix('patients')->group(function(){
     Route::put('/{id}',[PatientController::class, 'update'])->name('patients.update');
     Route::delete('/{id}',[PatientController::class, 'destroy'])->name('patients.destroy');
 });
+
+Route::prefix('rendez-vous')->group(function(){
+    Route::get('/',[RendezVousController::class, 'index'])->name('rendezvous.index');
+    Route::get('/create',[RendezVousController::class, 'create'])->name('rendezvous.create');
+    Route::post('/',[RendezVousController::class, 'store'])->name('rendezvous.store');
+    Route::get('/{id}/edit',[RendezVousController::class, 'edit'])->name('rendezvous.edit');
+    Route::put('/{id}',[RendezVousController::class, 'update'])->name('rendezvous.update');
+});
+
 
 require __DIR__.'/auth.php';

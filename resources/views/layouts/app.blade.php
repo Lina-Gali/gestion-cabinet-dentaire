@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Fakeeh Care Group')</title>
+    <title>@yield('title', 'Dentina')</title>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    @stack('styles')
     <style>
         * {
             margin: 0;
@@ -391,6 +393,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="layout-container">
         <!-- Sidebar -->
@@ -401,7 +404,7 @@
                 </div>
                 <span class="logo-text">Dentina</span>
             </div>
-            
+
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
@@ -410,7 +413,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('rendezvous.index') }}" class="nav-link">
                         <i class="fas fa-bed"></i>
                         <span>Rendez-Vous</span>
                     </a>
@@ -422,7 +425,7 @@
         <div class="main-content">
             <!-- Header -->
             <header class="header">
-               
+
             </header>
 
             <!-- Content -->
@@ -434,4 +437,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

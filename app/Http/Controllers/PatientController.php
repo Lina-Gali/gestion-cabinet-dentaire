@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
-   
+
     public function index(Request $request)
     {
         $query = Patient::query();
@@ -18,18 +18,18 @@ class PatientController extends Controller
                 ->orWhere('telephone', 'like', "%$search%");
         }
 
-        $patients = $query->paginate(10); 
+        $patients = $query->paginate(10);
 
         return view('patients.index', compact('patients'));
     }
 
-   
+
     public function create()
     {
         return view('patients.create');
     }
 
-  
+
     public function store(Request $request)
     {
         $request->validate([
@@ -45,7 +45,7 @@ class PatientController extends Controller
             ->with('success', 'Patient ajouté avec succès.');
     }
 
-   
+
     public function show($id)
     {
         $patient = Patient::findOrFail($id);
@@ -58,7 +58,7 @@ class PatientController extends Controller
         return view('patients.edit', compact('patient'));
     }
 
-   
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -82,5 +82,15 @@ class PatientController extends Controller
 
         return redirect()->route('patients.index')
             ->with('success', 'Patient supprimé avec succès.');
+    }
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        $patients = Patient::where('nom_complet', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'nom_complet']);
+
+        return response()->json($patients);
     }
 }

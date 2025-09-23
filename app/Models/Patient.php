@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\RendezVous;
 class Patient extends Model
 {
     protected $fillable = [
@@ -12,4 +12,12 @@ class Patient extends Model
         'age',
         'maladies',
     ];
+    public function rendezvous ()
+    {
+        return $this->hasMany(RendezVous::class);
+    }
+    public function dentistes ()
+    {
+        return $this->belongsTo(Dentist::class);
+    }
 }

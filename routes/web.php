@@ -19,7 +19,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::prefix('patients')->group(function(){
-    Route::get('/search', [PatientController::class, 'search'])->name('patients.search'); // Déplacé avant les routes avec paramètres
+    Route::get('/search', [PatientController::class, 'search'])->name('patients.search'); 
     Route::get('/',[PatientController::class, 'index'])->name('patients.index');
     Route::get('/create',[PatientController::class, 'create'])->name('patients.create');
     Route::post('/',[PatientController::class, 'store'])->name('patients.store');
@@ -33,8 +33,10 @@ Route::prefix('rendez-vous')->group(function(){
     Route::get('/',[RendezVousController::class, 'index'])->name('rendezvous.index');
     Route::get('/create',[RendezVousController::class, 'create'])->name('rendezvous.create');
     Route::post('/',[RendezVousController::class, 'store'])->name('rendezvous.store');
+    Route::get('/calendar', [RendezVousController::class, 'calendar'])->name('rendezvous.calendar');
     Route::get('/{id}/edit',[RendezVousController::class, 'edit'])->name('rendezvous.edit');
     Route::put('/{id}',[RendezVousController::class, 'update'])->name('rendezvous.update');
+    Route::delete('/{id}',[RendezVousController::class, 'destroy'])->name('rendezvous.destroy');
 });
 
 

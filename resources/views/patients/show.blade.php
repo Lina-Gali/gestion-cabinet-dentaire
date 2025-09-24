@@ -41,38 +41,38 @@
                 <div class="info-item">
                     <label class="info-label">Âge</label>
                     <div class="info-value">{{ $patient->age }}</div>
-                    </div>
-                </div>
-
-            </div>
-
-            @if($patient->maladies)
-            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
-                <label class="info-label">Maladies / Conditions Médicales</label>
-                <div class="info-value" style="margin-top: 12px;">
-                    <div style="background: #f8fafc; padding: 16px; border-radius: 8px; line-height: 1.6;">
-                        {{ $patient->maladies }}
-                    </div>
                 </div>
             </div>
-            @endif
+
         </div>
-    </div>
 
-    <div style="display: flex; flex-direction: column; gap: 24px;">
-        <div class="card">
-            <div class="card-header">
-                <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Actions Rapides</h3>
-            </div>
-            <div style="padding: 20px;">
-                <button class="btn" style="background: #f0f9ff; color: #0369a1; width: 100%;" data-action="appointment">
-                    <i class="fas fa-calendar-plus"></i>
-                    Programmer RDV
-                </button>
-
+        @if($patient->maladies)
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+            <label class="info-label">Maladies / Conditions Médicales</label>
+            <div class="info-value" style="margin-top: 12px;">
+                <div style="background: #f8fafc; padding: 16px; border-radius: 8px; line-height: 1.6;">
+                    {{ $patient->maladies }}
+                </div>
             </div>
         </div>
+        @endif
     </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 24px;">
+    <div class="card">
+        <div class="card-header">
+            <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Actions Rapides</h3>
+        </div>
+        <div style="padding: 20px;">
+            <a href="{{ route('rendezvous.create') }}" class="btn" style="background: #f0f9ff; color: #0369a1; width: 100%;" data-action="appointment">
+                <i class="fas fa-calendar-plus"></i>
+                Programmer RDV
+            </a>
+
+        </div>
+    </div>
+</div>
 
 </div>
 </div>
@@ -150,29 +150,3 @@
 </style>
 
 @endSection
-
-@push('scripts')
-<script>
-    // Actions rapides
-    document.addEventListener('DOMContentLoaded', function() {
-        // Bouton Admettre
-        const admitBtn = document.querySelector('[data-action="admit"]');
-        if (admitBtn) {
-            admitBtn.addEventListener('click', function() {
-                if (confirm('Voulez-vous admettre ce patient?')) {
-                    // Ici vous pouvez ajouter la logique pour admettre le patient
-                    alert('Patient admis avec succès!');
-                }
-            });
-        }
-
-        // Impression du dossier
-        const printBtn = document.querySelector('[data-action="print"]');
-        if (printBtn) {
-            printBtn.addEventListener('click', function() {
-                window.print();
-            });
-        }
-    });
-</script>
-@endpush

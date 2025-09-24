@@ -413,9 +413,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('rendezvous.calendar') }}" class="nav-link {{ request()->routeIs('rendezvous.*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar"></i>
+                        <span>Planning</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('rendezvous.index') }}" class="nav-link">
-                        <i class="fas fa-bed"></i>
-                        <span>Rendez-Vous</span>
+                        <i class="fas fa-list"></i>
+                        <span>Liste RDV</span>
                     </a>
                 </li>
             </ul>

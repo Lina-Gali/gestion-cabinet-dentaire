@@ -10,16 +10,63 @@ use App\Models\Dentist;
 
 class RendezVousController extends Controller
 {
-    // Votre méthode index existante pour la liste
-    public function index()
+
+    public function index(Request $request)
     {
+        $query = RendezVous::with(['patient', 'dentiste']);
+
+        $selectedDate = $request->get('date', Carbon::today()->format('Y-m-d'));
+        $dateFilter = Carbon::parse($selectedDate);
+
+        if ($request->get('filter') === 'today' || !$request->has('filter')) {
+            $query->whereDate('date_heure', $dateFilter);
+        } elseif ($request->get('filter') === 'week') {
+            $query->whereBetween('date_heure', [
+                $dateFilter->startOfWeek(Carbon::MONDAY),
+                $dateFilter->copy()->endOfWeek(Carbon::SUNDAY)
+            ]);
+        } elseif ($request->get('filter') === 'month') {
+            $query->whereMonth('date_heure', $dateFilter->month)
+                ->whereYear('date_heure', $dateFilter->year);
+        }
+        elseif ($request->get('filter') === 'all') {
+            // No date filter applied
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function ($q) use ($search) {
+                $q->where('nom_complet', 'like', "%$search%")
+                    ->orWhere('num_telephone', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('dentiste_id')) {
+            $query->where('dentiste_id', $request->dentiste_id);
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        $rendezVous = $query->orderBy('date_heure', 'asc')->paginate(10);
+
+        $dentistes = Dentist::all();
+
+        return view('rendezvous.index', compact('rendezVous', 'dentistes', 'selectedDate'));
+    }
+
+    public function indexHome()
+    {
+        $today = Carbon::today();
+
         $rendezVous = RendezVous::with(['patient', 'dentiste'])
+            ->whereDate('date_heure', $today)
             ->orderBy('date_heure', 'asc')
             ->paginate(10);
 
-        return view('rendezvous.index', compact('rendezVous'));
+        return view('home.acceuil', compact('rendezVous'));
     }
-
 
     public function calendar(Request $request)
     {
@@ -61,11 +108,6 @@ class RendezVousController extends Controller
                 $calendar[$dayKey]['appointments'][$timeKey][] = $rdv;
             }
         }
-        if ($request->filled('day')) {
-            $day = Carbon::parse($request->day)->startOfDay();
-            $weekStart = $day->copy();
-            $weekEnd = $day->copy()->endOfDay();
-        }
 
         $dentistes = Dentist::all();
 
@@ -86,7 +128,7 @@ class RendezVousController extends Controller
     private function generateTimeSlots()
     {
         $slots = [];
-        for ($hour = 8; $hour < 18; $hour++) {
+        for ($hour = 9; $hour < 21; $hour++) {
             $slots[] = sprintf('%02d:00', $hour);
             $slots[] = sprintf('%02d:30', $hour);
         }
@@ -107,6 +149,7 @@ class RendezVousController extends Controller
             'dentiste_id' => 'required|exists:dentists,id',
             'date_heure' => 'required|date',
             'motif' => 'required|in:consultation,extraction,soins_dentaires,prothese',
+            'statut' => 'nullable|in:prevu,termine',
         ]);
 
         RendezVous::create($request->all());
@@ -147,5 +190,17 @@ class RendezVousController extends Controller
 
         return redirect()->route('rendezvous.index')
             ->with('success', 'Rendez-vous supprimé avec succès.');
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'statut' => 'required|in:prevu,termine',
+        ]);
+
+        $rendezVous = RendezVous::findOrFail($id);
+        $rendezVous->update(['statut' => $request->statut]);
+
+        return redirect()->route('rendezvous.index')
+            ->with('success', 'Statut mis à jour avec succès.');
     }
 }

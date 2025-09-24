@@ -250,7 +250,6 @@
 
 <div class="calendar-container">
     <div class="calendar-header">
-        <!-- Navigation semaine -->
         <div class="week-navigation">
             <a href="{{ route('rendezvous.calendar') }}?week={{ $prevWeek->format('Y-m-d') }}&dentiste_id={{ request('dentiste_id') }}"
                 class="week-nav-btn">
@@ -266,7 +265,6 @@
         </div>
 
         <div class="calendar-filters">
-            <!-- Filtre par dentiste -->
             <form method="GET" action="{{ route('rendezvous.calendar') }}" style="display: flex; gap: 12px; align-items: center;">
                 <input type="hidden" name="week" value="{{ request('week', $weekStart->format('Y-m-d')) }}">
                 <select name="dentiste_id" class="filter-select" onchange="this.form.submit()">
@@ -286,7 +284,6 @@
         </div>
     </div>
 
-    <!-- Calendrier -->
     <div style="overflow-x: auto;">
         <table class="calendar-table">
             <thead>
@@ -364,7 +361,6 @@
     </div>
 </div>
 
-<!-- Légende -->
 <div class="card" style="margin-top: 20px;">
     <div class="card-header">
         <h4>Légende des couleurs</h4>

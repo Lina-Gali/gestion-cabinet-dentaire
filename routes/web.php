@@ -4,9 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RendezVousController;
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -17,6 +15,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/',[RendezVousController::class, 'indexHome'])->name('home.acceuil');
+;
 
 Route::prefix('patients')->group(function(){
     Route::get('/search', [PatientController::class, 'search'])->name('patients.search'); 
@@ -37,6 +38,7 @@ Route::prefix('rendez-vous')->group(function(){
     Route::get('/{id}/edit',[RendezVousController::class, 'edit'])->name('rendezvous.edit');
     Route::put('/{id}',[RendezVousController::class, 'update'])->name('rendezvous.update');
     Route::delete('/{id}',[RendezVousController::class, 'destroy'])->name('rendezvous.destroy');
+    Route::patch('/{rendezvous}/status', [RendezVousController::class, 'updateStatus'])->name('rendezvous.update-status');
 });
 
 

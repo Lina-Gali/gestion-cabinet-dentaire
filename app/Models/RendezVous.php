@@ -11,6 +11,7 @@ class RendezVous extends Model
         'dentiste_id',
         'date_heure',
         'motif',
+        'statut',
         'patient_id',
     ];
     protected $casts = [

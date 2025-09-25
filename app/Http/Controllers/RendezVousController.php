@@ -12,50 +12,17 @@ class RendezVousController extends Controller
 {
 
     public function index(Request $request)
-    {
-        $query = RendezVous::with(['patient', 'dentiste']);
+{
+    $rendezVous = RendezVous::with(['patient', 'dentiste'])
+        ->filter($request->all())  
+        ->orderBy('date_heure', 'asc')
+        ->paginate(10);
 
-        $selectedDate = $request->get('date', Carbon::today()->format('Y-m-d'));
-        $dateFilter = Carbon::parse($selectedDate);
+    $dentistes = Dentist::all();
+    $selectedDate = $request->get('date', Carbon::today()->format('Y-m-d'));
 
-        if ($request->get('filter') === 'today' || !$request->has('filter')) {
-            $query->whereDate('date_heure', $dateFilter);
-        } elseif ($request->get('filter') === 'week') {
-            $query->whereBetween('date_heure', [
-                $dateFilter->startOfWeek(Carbon::MONDAY),
-                $dateFilter->copy()->endOfWeek(Carbon::SUNDAY)
-            ]);
-        } elseif ($request->get('filter') === 'month') {
-            $query->whereMonth('date_heure', $dateFilter->month)
-                ->whereYear('date_heure', $dateFilter->year);
-        }
-        elseif ($request->get('filter') === 'all') {
-            // No date filter applied
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('patient', function ($q) use ($search) {
-                $q->where('nom_complet', 'like', "%$search%")
-                    ->orWhere('num_telephone', 'like', "%$search%");
-            });
-        }
-
-        if ($request->filled('dentiste_id')) {
-            $query->where('dentiste_id', $request->dentiste_id);
-        }
-
-        if ($request->filled('statut')) {
-            $query->where('statut', $request->statut);
-        }
-
-        $rendezVous = $query->orderBy('date_heure', 'asc')->paginate(10);
-
-        $dentistes = Dentist::all();
-
-        return view('rendezvous.index', compact('rendezVous', 'dentistes', 'selectedDate'));
-    }
-
+    return view('rendezvous.index', compact('rendezVous', 'dentistes', 'selectedDate'));
+}
     public function indexHome()
     {
         $today = Carbon::today();

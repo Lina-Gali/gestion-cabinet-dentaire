@@ -10,7 +10,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @stack('styles')
-  
+
 </head>
 
 <body>
@@ -54,8 +54,33 @@
         <div class="main-content">
             <!-- Header -->
             <header class="header">
+                <div class="header-left">
+                    <!-- Ici tu peux mettre un titre de page si besoin -->
+                </div>
 
+                <div class="user-menu">
+                    <div class="user-dropdown">
+                        <button class="user-dropdown-toggle">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="user-name">{{ Auth::user()->name ?? 'Utilisateur' }}</span>
+                            <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+
+                        <ul class="user-dropdown-menu">
+
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit">Déconnexion</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </header>
+
 
             <!-- Content -->
             <main class="content">
@@ -65,6 +90,26 @@
     </div>
 
     @stack('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggle = document.querySelector(".user-dropdown-toggle");
+            const dropdown = document.querySelector(".user-dropdown");
+
+            if (toggle && dropdown) {
+                toggle.addEventListener("click", () => {
+                    dropdown.classList.toggle("open");
+                });
+
+                // Fermer si clic en dehors
+                document.addEventListener("click", (e) => {
+                    if (!dropdown.contains(e.target)) {
+                        dropdown.classList.remove("open");
+                    }
+                });
+            }
+        });
+    </script>
+
 </body>
 
 </html>

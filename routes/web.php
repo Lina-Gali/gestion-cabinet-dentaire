@@ -17,7 +17,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/',[RendezVousController::class, 'indexHome'])->name('home.acceuil');
-;
+
 
 Route::prefix('patients')->group(function(){
     Route::get('/search', [PatientController::class, 'search'])->name('patients.search'); 

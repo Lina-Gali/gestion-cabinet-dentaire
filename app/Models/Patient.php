@@ -11,6 +11,7 @@ class Patient extends Model
         'num_telephone',
         'age',
         'maladies',
+        'notes',
     ];
     public function rendezvous ()
     {

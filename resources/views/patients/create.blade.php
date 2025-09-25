@@ -107,58 +107,7 @@
     </div>
 </div>
 
-<style>
-.form-group {
-    margin-bottom: 20px;
-}
 
-.form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #374151;
-    font-size: 14px;
-}
-
-.form-input,
-.form-textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.2s;
-    font-family: 'Mulish', sans-serif;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-input.error,
-.form-textarea.error {
-    border-color: #ef4444;
-}
-
-.error-message {
-    display: block;
-    margin-top: 4px;
-    font-size: 12px;
-    color: #ef4444;
-}
-
-.form-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-select.form-input {
-    cursor: pointer;
-}
-</style>
 
 @endSection
 

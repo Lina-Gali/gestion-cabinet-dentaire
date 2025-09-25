@@ -117,15 +117,12 @@
         });
     }
 
-    // Auto-submit des formulaires de filtres
     document.querySelectorAll('.filter-select').forEach(select => {
         select.addEventListener('change', function() {
-            // Créer un formulaire avec la recherche actuelle et le nouveau filtre
             const form = document.createElement('form');
             form.method = 'GET';
             form.action = '{{ route("patients.index") }}';
 
-            // Ajouter l'input de recherche s'il existe
             const searchValue = document.querySelector('.search-input').value;
             if (searchValue) {
                 const searchField = document.createElement('input');
@@ -135,7 +132,6 @@
                 form.appendChild(searchField);
             }
 
-            // Ajouter le filtre actuel
             const filterField = document.createElement('input');
             filterField.type = 'hidden';
             filterField.name = this.name;

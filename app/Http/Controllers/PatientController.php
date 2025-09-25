@@ -37,6 +37,7 @@ class PatientController extends Controller
             'age' => 'nullable|integer',
             'num_telephone' => 'nullable|string|max:15',
             'maladies' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
         Patient::create($request->all());
@@ -49,7 +50,17 @@ class PatientController extends Controller
     public function show($id)
     {
         $patient = Patient::findOrFail($id);
-        return view('patients.show', compact('patient'));
+
+        $rendezVous = $patient->rendezvous()
+            ->with('dentiste')
+            ->orderBy('date_heure', 'desc')
+            ->get();
+
+        $stats = [
+            'prochain_rdv' => $rendezVous->where('date_heure', '>', now())->where('statut', 'prevu')->first(),
+        ];
+
+        return view('patients.show', compact('patient', 'rendezVous', 'stats'));
     }
 
     public function edit($id)
@@ -66,6 +77,7 @@ class PatientController extends Controller
             'age' => 'nullable|integer',
             'num_telephone' => 'nullable|string|max:15',
             'maladies' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
         $patient = Patient::findOrFail($id);

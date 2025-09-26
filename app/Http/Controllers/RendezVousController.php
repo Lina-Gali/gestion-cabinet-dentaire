@@ -12,17 +12,17 @@ class RendezVousController extends Controller
 {
 
     public function index(Request $request)
-{
-    $rendezVous = RendezVous::with(['patient', 'dentiste'])
-        ->filter($request->all())  
-        ->orderBy('date_heure', 'asc')
-        ->paginate(10);
+    {
+        $rendezVous = RendezVous::with(['patient', 'dentiste'])
+            ->filter($request->all())
+            ->orderBy('date_heure', 'asc')
+            ->paginate(10);
 
-    $dentistes = Dentist::all();
-    $selectedDate = $request->get('date', Carbon::today()->format('Y-m-d'));
+        $dentistes = Dentist::all();
+        $selectedDate = $request->get('date', Carbon::today()->format('Y-m-d'));
 
-    return view('rendezvous.index', compact('rendezVous', 'dentistes', 'selectedDate'));
-}
+        return view('rendezvous.index', compact('rendezVous', 'dentistes', 'selectedDate'));
+    }
     public function indexHome()
     {
         $today = Carbon::today();
@@ -111,15 +111,30 @@ class RendezVousController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+        $validated = $request->validate([
+            'patient_id'  => 'required|exists:patients,id',
             'dentiste_id' => 'required|exists:dentists,id',
-            'date_heure' => 'required|date',
-            'motif' => 'required|in:consultation,extraction,soins_dentaires,prothese',
-            'statut' => 'nullable|in:prevu,termine',
+            'date_heure'  => 'required|date|after_or_equal:now',
+            'motif'       => 'required|in:consultation,extraction,soins_dentaires,prothese',
+            'statut'      => 'nullable|in:prevu,termine',
+        ], [
+            'patient_id.required'  => 'Veuillez sélectionner un patient.',
+            'patient_id.exists'    => 'Le patient sélectionné est invalide.',
+
+            'dentiste_id.required' => 'Veuillez sélectionner un dentiste.',
+            'dentiste_id.exists'   => 'Le dentiste sélectionné est invalide.',
+
+            'date_heure.required'  => 'La date et l\'heure du rendez-vous sont obligatoires.',
+            'date_heure.date'      => 'La date du rendez-vous n\'est pas valide.',
+            'date_heure.after_or_equal' => 'La date du rendez-vous doit être égale ou postérieure à maintenant.',
+
+            'motif.required'       => 'Le motif du rendez-vous est obligatoire.',
+            'motif.in'             => 'Le motif sélectionné est invalide.',
+
+            'statut.in'            => 'Le statut doit être soit "prévu" soit "terminé".',
         ]);
 
-        RendezVous::create($request->all());
+        RendezVous::create($validated);
 
         return redirect()->route('rendezvous.index')
             ->with('success', 'Rendez-vous ajouté avec succès.');
@@ -127,6 +142,10 @@ class RendezVousController extends Controller
 
     public function edit($id)
     {
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Rendez-vous introuvable');
+        }
+
         $rendezVous = RendezVous::findOrFail($id);
         $patients = Patient::all();
         $dentistes = Dentist::all();
@@ -136,15 +155,35 @@ class RendezVousController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Rendez-vous introuvable');
+        }
+
+        $validated = $request->validate([
+            'patient_id'  => 'required|exists:patients,id',
             'dentiste_id' => 'required|exists:dentists,id',
-            'date_heure' => 'required|date',
-            'motif' => 'required|in:consultation,extraction,soins_dentaires,prothese',
+            'date_heure'  => 'required|date|after_or_equal:now',
+            'motif'       => 'required|in:consultation,extraction,soins_dentaires,prothese',
+            'statut'      => 'nullable|in:prevu,termine',
+        ], [
+            'patient_id.required'  => 'Veuillez sélectionner un patient.',
+            'patient_id.exists'    => 'Le patient sélectionné est invalide.',
+
+            'dentiste_id.required' => 'Veuillez sélectionner un dentiste.',
+            'dentiste_id.exists'   => 'Le dentiste sélectionné est invalide.',
+
+            'date_heure.required'  => 'La date et l\'heure du rendez-vous sont obligatoires.',
+            'date_heure.date'      => 'La date du rendez-vous n\'est pas valide.',
+            'date_heure.after_or_equal' => 'La date du rendez-vous doit être égale ou postérieure à maintenant.',
+
+            'motif.required'       => 'Le motif du rendez-vous est obligatoire.',
+            'motif.in'             => 'Le motif sélectionné est invalide.',
+
+            'statut.in'            => 'Le statut doit être soit "prévu" soit "terminé".',
         ]);
 
         $rendezVous = RendezVous::findOrFail($id);
-        $rendezVous->update($request->all());
+        $rendezVous->update($validated);
 
         return redirect()->route('rendezvous.index')
             ->with('success', 'Rendez-vous modifié avec succès.');
@@ -152,6 +191,9 @@ class RendezVousController extends Controller
 
     public function destroy($id)
     {
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Rendez-vous introuvable');
+        }
         $rendezVous = RendezVous::findOrFail($id);
         $rendezVous->delete();
 
@@ -163,6 +205,9 @@ class RendezVousController extends Controller
         $request->validate([
             'statut' => 'required|in:prevu,termine',
         ]);
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Rendez-vous introuvable');
+        }
 
         $rendezVous = RendezVous::findOrFail($id);
         $rendezVous->update(['statut' => $request->statut]);

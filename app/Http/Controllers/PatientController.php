@@ -32,16 +32,27 @@ class PatientController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nom_complet' => 'required|string|max:100',
-            'age' => 'nullable|integer',
-            'num_telephone' => 'nullable|string|max:15',
-            'maladies' => 'nullable|string',
-            'notes' => 'nullable|string',
+        $validated = $request->validate([
+            'nom_complet'   => 'required|string|min:3|max:100|regex:/^[\pL\s\-\'’]+$/u',
+            'age'           => 'nullable|integer|min:0|max:150',
+            'num_telephone' => 'nullable|string|max:15|regex:/^[0-9+\-\s]+$/',
+            'maladies'      => 'nullable|string',
+            'notes'         => 'nullable|string',
+        ], [
+            'nom_complet.required' => 'Le nom complet est obligatoire.',
+            'nom_complet.min'      => 'Le nom doit contenir au moins 3 caractères.',
+            'nom_complet.max'      => 'Le nom ne peut pas dépasser 100 caractères.',
+            'nom_complet.regex'    => 'Le nom ne peut contenir que des lettres, espaces, tirets et apostrophes.',
+
+            'num_telephone.regex'  => 'Le numéro de téléphone contient des caractères invalides.',
+            'num_telephone.max'    => 'Le numéro de téléphone est trop long.',
+
+            'age.integer'          => 'L\'âge doit être un nombre entier.',
+            'age.min'              => 'L\'âge ne peut pas être négatif.',
+            'age.max'              => 'L\'âge ne peut pas dépasser 150 ans.',
         ]);
 
-        Patient::create($request->all());
-
+        Patient::create($validated);
         return redirect()->route('patients.index')
             ->with('success', 'Patient ajouté avec succès.');
     }
@@ -49,6 +60,9 @@ class PatientController extends Controller
 
     public function show($id)
     {
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Patient introuvable');
+        }
         $patient = Patient::findOrFail($id);
 
         $rendezVous = $patient->rendezvous()
@@ -65,6 +79,9 @@ class PatientController extends Controller
 
     public function edit($id)
     {
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Patient introuvable');
+        }
         $patient = Patient::findOrFail($id);
         return view('patients.edit', compact('patient'));
     }
@@ -72,16 +89,31 @@ class PatientController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nom_complet' => 'required|string|max:100',
-            'age' => 'nullable|integer',
-            'num_telephone' => 'nullable|string|max:15',
-            'maladies' => 'nullable|string',
-            'notes' => 'nullable|string',
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Patient introuvable');
+        }
+        $validated = $request->validate([
+            'nom_complet'   => 'required|string|min:3|max:100|regex:/^[\pL\s\-\'’]+$/u',
+            'age'           => 'nullable|integer|min:0|max:150',
+            'num_telephone' => 'nullable|string|max:15|regex:/^[0-9+\-\s]+$/',
+            'maladies'      => 'nullable|string',
+            'notes'         => 'nullable|string',
+        ], [
+            'nom_complet.required' => 'Le nom complet est obligatoire.',
+            'nom_complet.min'      => 'Le nom doit contenir au moins 3 caractères.',
+            'nom_complet.max'      => 'Le nom ne peut pas dépasser 100 caractères.',
+            'nom_complet.regex'    => 'Le nom ne peut contenir que des lettres, espaces, tirets et apostrophes.',
+
+            'num_telephone.regex'  => 'Le numéro de téléphone contient des caractères invalides.',
+            'num_telephone.max'    => 'Le numéro de téléphone est trop long.',
+
+            'age.integer'          => 'L\'âge doit être un nombre entier.',
+            'age.min'              => 'L\'âge ne peut pas être négatif.',
+            'age.max'              => 'L\'âge ne peut pas dépasser 150 ans.',
         ]);
 
         $patient = Patient::findOrFail($id);
-        $patient->update($request->all());
+        $patient->update($validated);
 
         return redirect()->route('patients.index')
             ->with('success', 'Patient modifié avec succès.');
@@ -89,6 +121,10 @@ class PatientController extends Controller
 
     public function destroy($id)
     {
+        if (!is_numeric($id) || $id <= 0) {
+            abort(404, 'Patient introuvable');
+        }
+
         $patient = Patient::findOrFail($id);
         $patient->delete();
 
